@@ -1,5 +1,5 @@
 # Project: monitor competitors' charts
-We're working on copyright nego preparation. One thing to notice is that which label have a higher consumption data in competitors' charts and to see whether we have these songs or not. Therefore, it is important to monitor competitors' charts. I use the scrap skills I've learnt on class and also the numpy/Pandas knowledge to deal with the raw data.
+We're working on copyright negotiation preparation. One thing to notice is that which label have a higher consumption data in competitors' charts and to see whether we have these songs or not. Therefore, it is important to monitor competitors' charts. I use the scrap skills I've learnt on class and also the numpy/Pandas knowledge to deal with the raw data.
 
 ## 1. Scrap the data
 ```python
