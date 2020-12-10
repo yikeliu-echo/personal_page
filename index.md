@@ -1,37 +1,75 @@
-## Welcome to GitHub Pages
+# Project: monitor competitors' charts
 
-You can use the [editor on GitHub](https://github.com/yikeliu-echo/personal_page/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+## 1. Scrap the data
+```python
+import os
+import numpy as np
+import pandas as pd
+import time
+import random
+import datetime
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+from bs4                             import BeautifulSoup
+from selenium                        import webdriver
+from sklearn.feature_extraction.text import CountVectorizer
 
-### Markdown
+pd.set_option('display.max_rows', 10)
+pd.set_option('display.max_columns', 5)
+pd.set_option('display.width',800)
+path = 'C:/Users/admin/Desktop/chromedriver_win32'
+os.chdir(path)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+def get_date():
+    begin = datetime.date(2020, 10, 23)
+    end = datetime.date(2020, 11, 25)
 
-```markdown
-Syntax highlighted code block
+    day_range = []
+    for i in range((end - begin).days + 1):
+        day = begin + datetime.timedelta(days=i)
+        day_range.append(str(day))
 
-# Header 1
-## Header 2
-### Header 3
+    return day_range
 
-- Bulleted
-- List
+date_store = get_date()
 
-1. Numbered
-2. List
+link_store = []
+for i in date_store:
+    link = "https://app.chartmetric.com/charts/spotify/daily?type=regional&region=id&date=" + i
+    link_store.append(link)
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+driver = webdriver.Chrome()
+for i in range(len(link_store)):
+    link_scrap = link_store[i].replace("‘", "")
+    driver.get(link_scrap)
+    time.sleep(12)
+    driver.find_element_by_xpath("//button[@class='btn btn-rounded btn-purple']").click()
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## 2. Merge all csv into one file
+```python
+import pandas as pd
+import os
 
-### Jekyll Themes
+Folder_Path = r'C:\Users\Admin\Desktop\Deezer1026-1125'  # Folder path to be spliced, be careful not to include Chinese
+SaveFile_Path = r'C:\Users\Admin\Desktop'  # File path to be saved after splicing
+SaveFile_Name = r'AppleIndonesiaPlaylist2.csv'  # File name to be saved after merging
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/yikeliu-echo/personal_page/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
 
-### Support or Contact
+# Modify current working path
+os.chdir(Folder_Path)
+# Save all file names in this folder into a list
+file_list = os.listdir()
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+# Read the first CSV file and include the header and add a new column to include the filename
+df = pd.read_csv(Folder_Path + '\\' + file_list[0])
+#df["Playlist Name"] = os.path.splitext(file_list[0])[0]
+# Write the first CSV file into the merged file and save
+df.to_csv(SaveFile_Path + '\\' + SaveFile_Name, encoding="utf_8_sig", index=False)
+
+# Loop through each CSV file name in the list and append to the merged file
+for i in range(1, len(file_list)):
+    df = pd.read_csv(Folder_Path + '\\' + file_list[i])
+    #df["Playlist Name"] = os.path.splitext(file_list[i])[0]
+    df.to_csv(SaveFile_Path + '\\' + SaveFile_Name, encoding="utf_8_sig", index=False, header=False, mode='a+')
+```
+
